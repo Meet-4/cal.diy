@@ -67,7 +67,11 @@ export const useHandleBookEvent = ({
   const handleBookEvent = (inputTimeSlot?: string) => {
     const values = bookingForm.getValues();
     const timeslot = inputTimeSlot ?? storeTimeSlot;
-    const callbacks = inputTimeSlot && !isPlatform ? { onError: handleError } : undefined;
+    // Surface every booking failure to the user, not only the ones triggered from a
+    // timeslot click: the confirm-step submit has no onError today, so a non-OK
+    // /api/book/event response (e.g. a 400) can leave the user with no feedback at all
+    // once the form unmounts. Platform keeps its own error-display wiring.
+    const callbacks = !isPlatform ? { onError: handleError } : undefined;
     if (timeslot) {
       // Clears form values stored in store, so old values won't stick around.
       setFormValues({});

@@ -7,6 +7,7 @@ import { z } from "zod";
 import { getAppWithMetadata } from "@calcom/app-store/_appRegistry";
 import { getAppAssetFullPath } from "@calcom/app-store/getAppAssetFullPath";
 import { IS_PRODUCTION } from "@calcom/lib/constants";
+import { markdownToSafeHTML } from "@calcom/lib/markdownToSafeHTML";
 import { prisma } from "@calcom/prisma";
 import logger from "@calcom/lib/logger";
 
@@ -119,7 +120,7 @@ export const getStaticProps = async (slug: string) => {
   }
   return {
     isAppDisabled: false as const,
-    source: { content, data },
+    source: { content, contentAsSafeHTML: markdownToSafeHTML(content), data },
     data: appMeta,
   };
 };

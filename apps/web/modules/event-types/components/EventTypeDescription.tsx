@@ -6,7 +6,6 @@ import { Price } from "@calcom/features/bookings/components/event-meta/Price";
 import { PriceIcon } from "@calcom/web/modules/bookings/components/event-meta/PriceIcon";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { parseRecurringEvent } from "@calcom/lib/isRecurringEvent";
-import { markdownToSafeHTML } from "@calcom/lib/markdownToSafeHTML";
 import type { baseEventTypeSelect } from "@calcom/prisma";
 import type { Prisma, EventType } from "@calcom/prisma/client";
 import { SchedulingType } from "@calcom/prisma/enums";
@@ -58,9 +57,9 @@ export const EventTypeDescription = ({
               shortenDescription ? "line-clamp-4 [&>*:not(:first-child)]:hidden" : ""
             )}
             // eslint-disable-next-line react/no-danger
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: Content is sanitized via markdownToSafeHTML
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: Content is pre-sanitized on the server as descriptionAsSafeHTML
             dangerouslySetInnerHTML={{
-              __html: markdownToSafeHTML(eventType.descriptionAsSafeHTML || ""),
+              __html: eventType.descriptionAsSafeHTML || "",
             }}
           />
         )}

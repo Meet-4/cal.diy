@@ -233,17 +233,18 @@ export class StripeService {
   }
 
   async createStripeCustomerId(user: Pick<User, "email" | "name" | "metadata">) {
-    let customerId: string;
-
     const stripe = this.getStripe();
-    try {
-      const customersResponse = await stripe.customers.list({
-        email: user.email,
-        limit: 1,
-      });
 
-      customerId = customersResponse.data[0].id;
-    } catch (error) {
+    const customersResponse = await stripe.customers.list({
+      email: user.email,
+      limit: 1,
+    });
+
+    // Only fall back to customer creation when the list call succeeds but returns
+    // no customer. Real Stripe errors must propagate - silently creating a new
+    // customer for them would leave duplicate customers behind (see issue #29455).
+    let customerId = customersResponse.data[0]?.id;
+    if (!customerId) {
       const customer = await stripe.customers.create({ email: user.email });
       customerId = customer.id;
     }
